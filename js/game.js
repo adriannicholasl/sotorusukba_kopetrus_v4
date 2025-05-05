@@ -246,26 +246,28 @@ const waitFirebase = setInterval(() => {
 }, 300);
 
 
-startBtn.addEventListener("click", () => {
-  // Preload suara tap, win, dan lose secara diam-diam
-  [tapSound, winSound, loseSound].forEach(sound => {
-    sound.muted = true;
-    sound.play().then(() => {
-      sound.pause();
-      sound.muted = false;
-      sound.currentTime = 0;
-    }).catch(() => {});
+if(startBtn){
+  startBtn.addEventListener("click", () => {
+    // Preload suara tap, win, dan lose secara diam-diam
+    [tapSound, winSound, loseSound].forEach(sound => {
+      sound.muted = true;
+      sound.play().then(() => {
+        sound.pause();
+        sound.muted = false;
+        sound.currentTime = 0;
+      }).catch(() => {});
+    });
+  
+    // Mainkan suara countdown segera saat tombol diklik
+    const countdownSound = document.getElementById("countdownSound");
+    if (countdownSound) {
+      countdownSound.play().catch(err => console.warn("❗ Gagal memutar countdown sound:", err));
+    }
+  
+    // Sembunyikan overlay mulai
+    if (startOverlay) startOverlay.style.display = "none";
+  
+    // Mulai countdown animasi
+    startCountdown();
   });
-
-  // Mainkan suara countdown segera saat tombol diklik
-  const countdownSound = document.getElementById("countdownSound");
-  if (countdownSound) {
-    countdownSound.play().catch(err => console.warn("❗ Gagal memutar countdown sound:", err));
-  }
-
-  // Sembunyikan overlay mulai
-  if (startOverlay) startOverlay.style.display = "none";
-
-  // Mulai countdown animasi
-  startCountdown();
-});
+}
