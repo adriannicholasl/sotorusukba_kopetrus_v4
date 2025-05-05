@@ -46,6 +46,9 @@ function fetchSettingsFromFirebase() {
 }
 
 function startCountdown() {
+  const countdownSound = document.getElementById("countdownSound");
+  if (countdownSound) countdownSound.play();
+
   let countdownInterval = setInterval(() => {
     countdownNumber--;
     if (countdownText) {

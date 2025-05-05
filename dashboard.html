@@ -61,50 +61,72 @@
         }
 
         .modal {
-        position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        display: none;
-        justify-content: center;
-        align-items: center;
-        z-index: 999;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
         }
 
         #closeSelfieModal {
-    cursor: pointer;
-    position: absolute;
-    top: 10px;
-    right: 10px; /* Adjusted from 40px to make it closer to the corner */
-    font-size: 30px; /* Increase size for better visibility */
-    color: black; /* White color for contrast */
-    background: rgba(199, 199, 199, 0.5); /* Semi-transparent background for better visibility */
-    border-radius: 10px; /* Circular background */
-    padding: 5px; /* Padding around the close icon */
-    transition: background 0.3s ease; /* Smooth transition for hover effect */
-}
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px; /* Adjusted from 40px to make it closer to the corner */
+            font-size: 30px; /* Increase size for better visibility */
+            color: black; /* White color for contrast */
+            background: rgba(199, 199, 199, 0.5); /* Semi-transparent background for better visibility */
+            border-radius: 10px; /* Circular background */
+            padding: 5px; /* Padding around the close icon */
+            transition: background 0.3s ease; /* Smooth transition for hover effect */
+        }
 
-#closeSelfieModal:hover {
-    background: rgba(0, 0, 0, 0.7); /* Darker background on hover */
-}
+        #closeSelfieModal:hover {
+            background: rgba(0, 0, 0, 0.7); /* Darker background on hover */
+        }
 
-#selfieModal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Background overlay */
-    z-index: 1000; /* Ensure modal is on top */
-}
+        #selfieModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Background overlay */
+            z-index: 1000; /* Ensure modal is on top */
+        }
 
-#selfieModalImage {
-    max-width: 90%;
-    max-height: 80vh; /* Ensure the image doesn't overflow the viewport */
-    margin: auto;
-    display: block;
-    border-radius: 8px;
-}
+        #selfieModalImage {
+            max-width: 90%;
+            max-height: 80vh; /* Ensure the image doesn't overflow the viewport */
+            margin: auto;
+            display: block;
+            border-radius: 8px;
+        }
+
+        .back-to-index {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            background-color: #b30000;
+            color: white;
+            font-family: 'Fredoka', sans-serif;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 18px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-to-index:hover {
+            background-color: #800000;
+        }
+
     </style>
 
 </head>
@@ -380,7 +402,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="copyright">
-                                    <p>Copyright © 2025 KKK Studio. All rights reserved. Template by <a href="https://colorlib.com">Colorlib</a>.</p>
+                                    <p>Copyright © 2025 Kustomisasi Kreasi Kreatif Multimedia and design Agency. All rights reserved.</p>
                                 </div>
                             </div>
                         </div>
@@ -390,6 +412,10 @@
         <!-- </div> -->
     </div>
 
+    <a href="index.html" class="back-to-index d-block d-lg-none">
+        <i class="fas fa-arrow-left"></i> Kembali ke Game
+    </a>
+    
     <!-- Jquery JS-->
     <script src="vendor/jquery-3.2.1.min.js"></script>
     <!-- Bootstrap JS-->

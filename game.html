@@ -24,7 +24,7 @@
     @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap");
     body {
 	/* line-height: 1.5; */
-	min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100) !important;
 	font-family: "Outfit", sans-serif;
 	color: #2d232e !important;
 	background-color: #c8c0bd;
@@ -447,48 +447,57 @@ a {
   <audio id="bgm" src="assets/sounds/bgm.mp3" autoplay loop preload="auto"></audio>></audio>
   <audio id="winSound" src="assets/sounds/win.mp3"></audio>
   <audio id="loseSound" src="assets/sounds/lose.mp3"></audio>
-  <audio id="countdownSound" src="assets/sounds/countdown.mp3" autoplay  preload="auto"></audio>></audio>
+  <audio id="countdownSound" src="assets/sounds/countdown.mp3" preload="auto"></audio>></audio>
   <audio id="tapSound" src="assets/sounds/tap.mp3"></audio>
 
   <!-- Scripts -->
   <script src="js/game.js?v=3"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-  // Hide loader when fully loaded
-  const loader = document.getElementById("loader");
-  if (loader) loader.style.display = "none";
+      // Hide loader when fully loaded
+      const loader = document.getElementById("loader");
+      if (loader) loader.style.display = "none";
 
-  // Reset background & content height
-  const bg = document.querySelector(".background");
-  const content = document.querySelector(".content");
-  if (bg) bg.style.height = "100vh";           // <- pakai 100vh
-  if (content) content.style.height = "100vh"; // <- pakai 100vh
+      // Reset background & content height
+      const bg = document.querySelector(".background");
+      const content = document.querySelector(".content");
+      if (bg) bg.style.height = "100vh";           // <- pakai 100vh
+      if (content) content.style.height = "100vh"; // <- pakai 100vh
 
-  // Scroll to top (pakai 3 cara)
-  window.scrollTo(0, 0);
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
+      // Scroll to top (pakai 3 cara)
+      window.scrollTo(0, 0);
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
 
-  // Exit fullscreen if any
-  if (document.fullscreenElement) {
-    document.exitFullscreen().catch((err) => {
-      console.warn("Tidak bisa keluar dari fullscreen:", err);
+      // Exit fullscreen if any
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((err) => {
+          console.warn("Tidak bisa keluar dari fullscreen:", err);
+        });
+      }
+
+      // Center object if exists
+      const obj = document.getElementById("object");
+      if (obj) {
+        const posX = (window.innerWidth - 100) / 2;
+        obj.style.left = posX + "px";
+      }
+
+      function setActualViewportHeight() {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      }
+      setActualViewportHeight();
+      window.addEventListener('resize', setActualViewportHeight);
     });
-  }
 
-  // Center object if exists
-  const obj = document.getElementById("object");
-  if (obj) {
-    const posX = (window.innerWidth - 100) / 2;
-    obj.style.left = posX + "px";
-  }
-});
     // Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
         .then(reg => console.log('Service Worker registered!', reg))
         .catch(err => console.log('Service Worker failed:', err));
     }
+
   </script>
 </body>
 </html>
