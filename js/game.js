@@ -17,6 +17,8 @@ const winSound = document.getElementById("winSound");
 const loseSound = document.getElementById("loseSound");
 const countdownOverlay = document.getElementById("countdownOverlay");
 const countdownText = document.getElementById("countdownText");
+const startBtn = document.getElementById("startBtn");
+const startOverlay = document.getElementById("startOverlay");
 
 let countdownNumber = 3;
 if (countdownText) countdownText.innerText = countdownNumber;
@@ -41,16 +43,17 @@ function fetchSettingsFromFirebase() {
       console.log("⚠️ Tidak ada data setting untuk level ini.");
     }
 
-    startCountdown();
+  // Tunggu user klik start dulu
+    console.log("✅ Setting berhasil diambil. Menunggu user klik Mulai...");
+    
   });
 }
 
+// Fungsi startCountdown yang sudah direvisi
 function startCountdown() {
-  const countdownSound = document.getElementById("countdownSound");
-  if (countdownSound) countdownSound.play();
-
   let countdownInterval = setInterval(() => {
     countdownNumber--;
+
     if (countdownText) {
       if (countdownNumber > 0) {
         countdownText.innerText = countdownNumber;
@@ -73,6 +76,7 @@ function startCountdown() {
     }
   }, 1000);
 }
+
 
 function startGame() {
   if (movingIntervalStarted) return;
@@ -240,3 +244,28 @@ const waitFirebase = setInterval(() => {
     fetchSettingsFromFirebase();
   }
 }, 300);
+
+
+startBtn.addEventListener("click", () => {
+  // Preload suara tap, win, dan lose secara diam-diam
+  [tapSound, winSound, loseSound].forEach(sound => {
+    sound.muted = true;
+    sound.play().then(() => {
+      sound.pause();
+      sound.muted = false;
+      sound.currentTime = 0;
+    }).catch(() => {});
+  });
+
+  // Mainkan suara countdown segera saat tombol diklik
+  const countdownSound = document.getElementById("countdownSound");
+  if (countdownSound) {
+    countdownSound.play().catch(err => console.warn("❗ Gagal memutar countdown sound:", err));
+  }
+
+  // Sembunyikan overlay mulai
+  if (startOverlay) startOverlay.style.display = "none";
+
+  // Mulai countdown animasi
+  startCountdown();
+});

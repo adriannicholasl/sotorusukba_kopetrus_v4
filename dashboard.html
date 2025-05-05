@@ -13,6 +13,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="robots" content="noindex, nofollow">
 
     <link rel="preload" href="assets/images/background-potrait.jpg" as="image">
     <link rel="preload" href="assets/images/background-lanscape.jpg" as="image">
@@ -70,6 +71,12 @@
             z-index: 999;
         }
 
+        @media screen and (max-width: 999px) {
+        .hide-on-small {
+            display: none !important;
+        }
+        }
+
         #closeSelfieModal {
             cursor: pointer;
             position: absolute;
@@ -106,27 +113,6 @@
             border-radius: 8px;
         }
 
-        .back-to-index {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 999;
-            background-color: #b30000;
-            color: white;
-            font-family: 'Fredoka', sans-serif;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 18px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-
-        .back-to-index:hover {
-            background-color: #800000;
-        }
-
     </style>
 
 </head>
@@ -161,6 +147,14 @@
                 </div>
             </nav>
         </header>
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark hide-on-small">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Dashboard</a>
+              <!-- Tombol untuk desktop, sembunyikan di layar kecil -->
+              <a href="index.html" class="btn btn-outline-light ms-auto">← Kembali</a>
+            </div>
+          </nav>
         <!-- END HEADER MOBILE-->
 
         <!-- MENU SIDEBAR-->
@@ -412,10 +406,6 @@
         <!-- </div> -->
     </div>
 
-    <a href="index.html" class="back-to-index d-block d-lg-none">
-        <i class="fas fa-arrow-left"></i> Kembali ke Game
-    </a>
-    
     <!-- Jquery JS-->
     <script src="vendor/jquery-3.2.1.min.js"></script>
     <!-- Bootstrap JS-->
