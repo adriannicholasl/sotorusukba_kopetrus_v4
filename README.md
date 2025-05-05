@@ -21,7 +21,7 @@ Game ini adalah permainan interaktif berbasis web untuk menarik pelanggan di res
 ### 🔹 Di LG Standby ME (Customer)
 1. Akses `index.html` melalui GitHub Pages.
 2. Pilih level → main game.
-3. Jika menang → isi nama, IG, telepon.
+3. Jika menang → isi nama, IG, telepon. (Simpan Data)
 4. QR Selfie ditampilkan untuk HP Customer (LG Standby ME tidak mendukung akses kamera di webOS)
 
 ### 🔹 Di HP Admin (Staf)
@@ -84,6 +84,6 @@ Data tersimpan cloud dan bisa diakses dari semua device.
 
 ## 🙌 Developer
 
-Triple K
+Copyright © 2025 Kustomisasi Kreasi Kreatif Multimedia and design Agency. **(KKK Multimedia & Design)**
 > Dibuat secara profesional dengan integrasi Firebase dan desain responsif. 
 
