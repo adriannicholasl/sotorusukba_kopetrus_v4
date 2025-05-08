@@ -23,6 +23,17 @@ const startOverlay = document.getElementById("startOverlay");
 let countdownNumber = 3;
 if (countdownText) countdownText.innerText = countdownNumber;
 
+// Ambil reward yang dipilih user dari sessionStorage
+const storedReward = sessionStorage.getItem("selectedReward");
+if (storedReward) {
+  try {
+    rewardConfig = JSON.parse(storedReward);
+    console.log("🎁 Hadiah terpilih:", rewardConfig);
+  } catch (err) {
+    console.warn("⚠️ Gagal parse selectedReward:", err);
+  }
+}
+
 // Ambil setting dari Firebase
 function fetchSettingsFromFirebase() {
   if (!window.db) return alert("Firebase belum siap");
@@ -33,27 +44,20 @@ function fetchSettingsFromFirebase() {
     if (data) {
       speed = parseInt(data.speed || 20);
       tolerance = parseInt(data.tolerance || 8);
-      rewardConfig = data;
 
       console.log(`✅ Setting berhasil diambil:`);
       console.log(`→ Speed: ${speed}`);
       console.log(`→ Tolerance: ${tolerance}`);
-      console.log(`→ Reward: ${rewardConfig.reward}`);
     } else {
       console.log("⚠️ Tidak ada data setting untuk level ini.");
     }
-
-  // Tunggu user klik start dulu
     console.log("✅ Setting berhasil diambil. Menunggu user klik Mulai...");
-    
   });
 }
 
-// Fungsi startCountdown yang sudah direvisi
 function startCountdown() {
   let countdownInterval = setInterval(() => {
     countdownNumber--;
-
     if (countdownText) {
       if (countdownNumber > 0) {
         countdownText.innerText = countdownNumber;
@@ -77,7 +81,6 @@ function startCountdown() {
   }, 1000);
 }
 
-
 function startGame() {
   if (movingIntervalStarted) return;
   movingIntervalStarted = true;
@@ -93,8 +96,6 @@ function startGame() {
 
 function moveObject() {
   if (!isMoving || gameEnded) return;
-
-  console.log("🎯 Object bergerak dengan speed:", speed);
 
   const targetRect = target.getBoundingClientRect();
   const objectRect = object.getBoundingClientRect();
@@ -130,11 +131,6 @@ document.body.addEventListener("click", () => {
                     objectRect.right >= targetRect.left &&
                     objectRect.top <= targetRect.bottom &&
                     objectRect.bottom >= targetRect.top;
-
-    console.log("offsetX:", offsetX);
-    console.log("offsetY:", offsetY);
-    console.log("tolerance:", tolerance);
-    console.log("overlap:", overlap);
 
     if (overlap && offsetX <= tolerance && offsetY <= tolerance) {
       document.body.style.backgroundColor = "#4CAF50";
@@ -199,6 +195,7 @@ function saveWinner() {
   const entry = {
     nama, ig, telp, level,
     reward: rewardConfig.reward,
+    rewardIcon: rewardConfig.icon,
     timestamp
   };
 
@@ -237,7 +234,6 @@ function animateLose() {
   }, 5500);
 }
 
-// Tunggu Firebase siap sebelum mulai
 const waitFirebase = setInterval(() => {
   if (window.db) {
     clearInterval(waitFirebase);
@@ -245,10 +241,8 @@ const waitFirebase = setInterval(() => {
   }
 }, 300);
 
-
 if(startBtn){
   startBtn.addEventListener("click", () => {
-    // Preload suara tap, win, dan lose secara diam-diam
     [tapSound, winSound, loseSound].forEach(sound => {
       sound.muted = true;
       sound.play().then(() => {
@@ -257,17 +251,13 @@ if(startBtn){
         sound.currentTime = 0;
       }).catch(() => {});
     });
-  
-    // Mainkan suara countdown segera saat tombol diklik
+
     const countdownSound = document.getElementById("countdownSound");
     if (countdownSound) {
       countdownSound.play().catch(err => console.warn("❗ Gagal memutar countdown sound:", err));
     }
-  
-    // Sembunyikan overlay mulai
+
     if (startOverlay) startOverlay.style.display = "none";
-  
-    // Mulai countdown animasi
     startCountdown();
   });
 }

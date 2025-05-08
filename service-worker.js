@@ -1,4 +1,4 @@
-const CACHE_NAME = 'Ko Petrus';
+const CACHE_NAME = 'Rusuk Ba Ko Petrus - Game Cache v1.0.0'; // Ganti dengan nama cache yang sesuai
 const urlsToCache = [
 // CSS
   'css/admin-style.css',  
@@ -14,6 +14,7 @@ const urlsToCache = [
   'index.html',
   'login.html',
   'offline.html',
+  'select-reward.html',
 
   // JS
   'js/game.js',
@@ -26,7 +27,11 @@ const urlsToCache = [
   'js/howler.core.min.js',
   'js/main copy.js',
   'js/main.js',
+  'js/index.js',
   'js/moment.js',
+  'js/login.js',
+  'js/game_important.js',
+  'js/select-reward.js',
   'manifest.json',
 
   // FONT

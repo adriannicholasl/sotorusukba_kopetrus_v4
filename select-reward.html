@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pilih Hadiah</title>
+    <link rel="stylesheet" href="css/style.css?v=4" />
+    <script src="js/firebase.js"></script>
+    <style>
+      body {
+        font-family: "Fredoka", sans-serif;
+        background: linear-gradient(360deg, rgba(168, 3, 3, 1) 0%, rgba(128, 0, 0, 1) 49%, rgba(54, 0, 0, 1) 100%);
+        margin: 0;
+        padding: 20px;
+        text-align: center;
+      }
+      .reward-option {
+        display: inline-block;
+        margin: 15px;
+        border: 2px solid transparent;
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+        background-color: white;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .reward-option.selected {
+        border-color: #750505;
+      }
+      .reward-option img {
+        max-width: 120px;
+        max-height: 120px;
+      }
+      .reward-name {
+        margin-top: 10px;
+        font-weight: bold;
+      }
+      #startGameBtn {
+        margin-top: 30px;
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        background-color: #750505;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      #startGameBtn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Pilih Hadiah yang Kamu Inginkan</h2>
+    <div id="rewardContainer"></div>
+    <button id="startGameBtn" disabled>Mulai Game</button>
+
+    <script src="js/select-reward.js"></script>
+  </body>
+</html>

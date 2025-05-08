@@ -91,7 +91,12 @@ function renderData(data) {
         <td><span class="block-email">${d.ig || '-'}</span></td>
         <td>${d.telp || '-'}</td>
         <td>${d.level || '-'}</td>
-        <td>${d.reward || '-'}</td>
+        <td>
+        ${d.reward || '-'}<br>
+        ${d.rewardIcon 
+            ? `<img src="${d.rewardIcon}" alt="Icon" style="max-height: 40px; margin-top: 5px;">`
+            : '<img src="assets/images/default-reward.png" style="max-height: 40px; margin-top: 5px;">'}
+        </td>
         <td>${new Date(d.timestamp).toLocaleString()}</td>
         <td>
         ${d.selfie ? `<img src="${d.selfie}" class="selfie-thumbnail" alt="Selfie" style="max-height: 60px; border-radius: 5px;">` : 'Tidak ada'}

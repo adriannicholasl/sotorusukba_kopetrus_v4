@@ -60,53 +60,7 @@
 
   <!-- Scripts -->
   <script src="js/game.js"></script>
-  <script>
-    function startGame(level) {
-      sessionStorage.setItem('audioAllowed', 'true');
-      document.body.classList.remove("fade-in");
-      document.body.classList.add("fade-out");
-      setTimeout(() => {
-        window.location.href = `game.html?level=${level}`;
-      }, 500);
-    }
+  <script src="js/index.js"></script>
 
-    document.addEventListener("DOMContentLoaded", () => {
-      // Hide loader when fully loaded
-      const loader = document.getElementById("loader");
-      if (loader) loader.style.display = "none";
-
-      // Reset background & content height
-      const bg = document.querySelector(".background");
-      const content = document.querySelector(".content");
-      if (bg) bg.style.height = "100vh";           
-      if (content) content.style.height = "100vh"; 
-
-      // Scroll to top (pakai 3 cara)
-      window.scrollTo(0, 0);
-      document.body.scrollTop = 0;
-      document.documentElement.scrollTop = 0;
-
-      // Exit fullscreen if any
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch((err) => {
-          console.warn("Tidak bisa keluar dari fullscreen:", err);
-        });
-      }
-
-      // Center object if exists
-      const obj = document.getElementById("object");
-      if (obj) {
-        const posX = (window.innerWidth - 100) / 2;
-        obj.style.left = posX + "px";
-      }
-    });
-
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('Service Worker registered!', reg))
-        .catch(err => console.log('Service Worker failed:', err));
-    }
-  </script>
 </body>
 </html>

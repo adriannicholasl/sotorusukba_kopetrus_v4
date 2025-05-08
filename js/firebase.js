@@ -24,6 +24,20 @@ firebaseScriptDB.onload = () => {
     databaseURL: "https://rusukbakopetrus-default-rtdb.asia-southeast1.firebasedatabase.app"
   };
 
+  if (window.firebase && firebase.initializeApp) {
+    firebase.initializeApp(firebaseConfig);
+    window.db = firebase.database();
+    console.log("✅ Firebase connected");
+  } else {
+    console.error("❌ Firebase gagal dimuat.");
+  }
+
+  firebaseScriptDB.onerror = () => {
+    alert("❌ Gagal memuat Firebase. Cek koneksi atau URL script.");
+  };
+  
+  
+
   // Inisialisasi Firebase
   firebase.initializeApp(firebaseConfig);
   window.db = firebase.database();
