@@ -284,38 +284,128 @@ async function loadSettings() {
         const modal = document.getElementById("selfieModal");
         modal.style.display = "none";
     });
+});
 
-// ---------------------------------------------------
-// 4. Utility: Download CSV / JSON
-    function downloadDataAsCSV(data) {
-        const rows = [
-        ['No', 'Nama', 'Instagram', 'Telp', 'Level', 'Reward', 'Timestamp']
-        ];
-        Object.values(data).forEach((d, i) => {
+// Helper function to show notification
+function showNotification(message) {
+    const notification = document.getElementById("download-status");
+    notification.textContent = message;
+    notification.style.display = "block";
+}
+
+// Helper function to hide notification after a delay
+function hideNotification() {
+    const notification = document.getElementById("download-status");
+    setTimeout(() => {
+        notification.style.display = "none";
+    }, 2000); // Hide after 2 seconds
+}
+
+// Event: Download CSV
+document.getElementById("btnDownloadCSV")?.addEventListener("click", async () => {
+    showNotification("Sedang Mendownload...");
+
+    const snap = await window.db.ref("winners").once("value");
+    const data = snap.val();
+    if (!data) {
+        showNotification("Data kosong");
+        return;
+    }
+
+    const rows = [["No", "Nama", "Instagram", "Telepon", "Level", "Hadiah", "Waktu"]];
+    Object.values(data).forEach((d, i) => {
         rows.push([
-            i + 1, d.nama || '-', d.ig || '-', d.telp || '-',
-            d.level || '-', d.reward || '-',
+            i + 1,
+            d.nama || "-",
+            d.ig || "-",
+            d.telp || "-",
+            d.level || "-",
+            d.reward || "-",
             new Date(d.timestamp).toLocaleString()
         ]);
-        });
-        const csv = rows.map(r => r.join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(blob),
-        download: 'data_pemenang.csv'
-        });
-        a.click();
+    });
+
+    const csv = rows.map(r => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "data_pemenang.csv";
+    a.click();
+
+    // Update notification to show success message
+    showNotification("Data berhasil didownload");
+    hideNotification();
+});
+
+// Event: Download JSON
+document.getElementById("btnDownloadJSON")?.addEventListener("click", async () => {
+    showNotification("Sedang Mendownload...");
+
+    const snap = await window.db.ref("winners").once("value");
+    const data = snap.val();
+    if (!data) {
+        showNotification("Data kosong");
+        return;
     }
 
-    function downloadDataAsJSON(data) {
-        const blob = new Blob([JSON.stringify(data, null, 2)], {
-        type: 'application/json'
-        });
-        const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(blob),
-        download: 'data_pemenang.json'
-        });
-        a.click();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "data_pemenang.json";
+    a.click();
+
+    // Update notification to show success message
+    showNotification("Data berhasil didownload");
+    hideNotification();
+});
+
+// Event: Download PDF
+document.getElementById("btnDownloadPDF")?.addEventListener("click", async () => {
+    showNotification("Sedang Mendownload...");
+
+    const snap = await window.db.ref("winners").once("value");
+    const data = snap.val();
+    if (!data) {
+        showNotification("Data kosong");
+        return;
     }
 
+    const body = [["No", "Nama", "Instagram", "Telepon", "Level", "Hadiah", "Waktu"]];
+    Object.values(data).forEach((d, i) => {
+        body.push([
+            i + 1,
+            d.nama || "-",
+            d.ig || "-",
+            d.telp || "-",
+            d.level || "-",
+            d.reward || "-",
+            new Date(d.timestamp).toLocaleString()
+        ]);
+    });
+
+    const docDefinition = {
+        content: [
+            { text: "Data Pemenang", style: "header" },
+            {
+                table: {
+                    headerRows: 1,
+                    widths: ["auto", "*", "*", "*", "auto", "*", "*"],
+                    body: body
+                }
+            }
+        ],
+        styles: {
+            header: {
+                fontSize: 16,
+                bold: true,
+                marginBottom: 10
+            }
+        }
+    };
+
+    pdfMake.createPdf(docDefinition).download("data_pemenang.pdf");
+
+    // Update notification to show success message
+    showNotification("Data berhasil didownload");
+    hideNotification();
 });
