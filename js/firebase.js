@@ -1,19 +1,21 @@
-/*
-  File: js/firebase.js
-  Tujuan: Inisialisasi Firebase menggunakan CDN agar bisa jalan di GitHub Pages & browser LG
-*/
+// Inisialisasi Firebase via CDN (compat) dan expose window.db + window.firebaseReady
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload  = () => resolve();
+    s.onerror = () => reject(new Error(`Gagal load ${src}`));
+    document.head.appendChild(s);
+  });
+}
 
-// Firebase App dan Realtime Database (Compat mode agar support CDN)
-const firebaseScriptApp = document.createElement('script');
-firebaseScriptApp.src = "https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js";
-document.head.appendChild(firebaseScriptApp);
-
-const firebaseScriptDB = document.createElement('script');
-firebaseScriptDB.src = "https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js";
-document.head.appendChild(firebaseScriptDB);
-
-// Tunggu sampai semua script termuat
-firebaseScriptDB.onload = () => {
+// Memuat Firebase script
+Promise.all([ 
+  loadScript("https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"),
+  loadScript("https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js")
+])
+.then(() => {
+  // Konfigurasi Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyBcu0rGrmBITM9fJUWlpG5Sd8S_uhPgl3M",
     authDomain: "rusukbakopetrus.firebaseapp.com",
@@ -24,23 +26,26 @@ firebaseScriptDB.onload = () => {
     databaseURL: "https://rusukbakopetrus-default-rtdb.asia-southeast1.firebasedatabase.app"
   };
 
-  if (window.firebase && firebase.initializeApp) {
+  // Inisialisasi Firebase
+  if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
-    window.db = firebase.database();
     console.log("✅ Firebase connected");
   } else {
-    console.error("❌ Firebase gagal dimuat.");
+    console.warn("⚠️ Firebase sudah terinisialisasi");
   }
 
-  firebaseScriptDB.onerror = () => {
-    alert("❌ Gagal memuat Firebase. Cek koneksi atau URL script.");
-  };
-  
-  
-
-  // Inisialisasi Firebase
-  firebase.initializeApp(firebaseConfig);
-  window.db = firebase.database();
-
-  console.log("✅ Firebase connected");
-};
+  // Atur firebaseReady setelah Firebase berhasil terinisialisasi
+  window.firebaseReady = new Promise((resolve, reject) => {
+    try {
+      const db = firebase.database();
+      window.db = db; // Tetap expose untuk debug/manual
+      resolve(db);    // Resolve promise dengan database Firebase
+    } catch (err) {
+      reject(new Error("❌ Gagal menginisialisasi Firebase Database."));
+    }
+  });
+})
+.catch(err => {
+  console.error("❌ Firebase gagal dimuat:", err);
+  alert("❌ Gagal memuat Firebase. Cek koneksi atau URL skrip.");
+});

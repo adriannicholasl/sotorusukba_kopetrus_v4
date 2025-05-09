@@ -425,6 +425,15 @@ body.game {
   margin-bottom: 10px;
 }
 
+#h2_select_reward{
+  font-family:WonderBoy;
+  font-style: bold;
+  /* width: 500px; */
+  font-weight: bolder;
+  font-size: 2rem;
+  color: #ffbe0b;
+  margin-bottom: 10px;
+}
 
 .subtitle {
   font-size: 14px;
@@ -801,6 +810,16 @@ body.game {
   .background {
     background: linear-gradient(360deg,rgba(168, 3, 3, 1) 0%, rgba(128, 0, 0, 1) 49%, rgba(54, 0, 0, 1) 100%);
     /* background: linear-gradient(rgba(50, 1, 1, 0.813)), url('../assets/images/background-potrait.jpg') no-repeat center center / cover !important; */
+  }
+
+  #h2_select_reward{
+    font-family:WonderBoy;
+    font-style: bold;
+    /* width: 500px; */
+    font-weight: bolder;
+    font-size: 4rem;
+    color: #ffbe0b;
+    margin-bottom: 10px;
   }
 
   .logo {
