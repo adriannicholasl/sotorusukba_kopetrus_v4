@@ -25,7 +25,7 @@ const countdownText   = document.getElementById("countdownText");
 const startBtn        = document.getElementById("startBtn");
 const startOverlay    = document.getElementById("startOverlay");
 
-// Inisialisasi tampilan hitung mundur
+// Tampilkan angka hitung mundur awal
 if (countdownText) countdownText.innerText = countdownNumber;
 
 // Ambil reward dari sessionStorage
@@ -39,15 +39,44 @@ if (storedReward) {
   }
 }
 
-// Ambil setting Firebase (async/await)
+// ✅ Fungsi tunggu firebase siap, maksimal 5 detik
+async function waitForFirebaseReady(timeout = 5000) {
+  const start = Date.now();
+  while (typeof window.firebaseReady === "undefined") {
+    if (Date.now() - start > timeout) {
+      alert("❌ Firebase belum siap setelah beberapa kali percobaan.");
+      throw new Error("Timeout: firebaseReady belum tersedia.");
+    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  try {
+    const db = await window.firebaseReady;
+    console.log("✅ Firebase siap dan terkoneksi");
+    return db;
+  } catch (err) {
+    console.error("❌ Gagal mendapatkan Firebase DB:", err);
+    alert("❌ Gagal koneksi ke Firebase.");
+    throw err;
+  }
+}
+
+// ✅ Inisialisasi game
+(async function initGame() {
+  try {
+    const db = await waitForFirebaseReady();
+    window.db = db;
+    await fetchSettingsFromFirebase();
+  } catch (e) {
+    console.error("🔥 Inisialisasi game gagal:", e);
+  }
+})();
+
+// Ambil setting speed/tolerance dari Firebase
 async function fetchSettingsFromFirebase() {
   try {
-    const db = await window.firebaseReady; // tunggu db siap
-    console.log(`📥 Mengambil setting level ${level} dari Firebase...`);
-    const snapshot = await db.ref(`settings/level${level}`).once("value");
-    if (!snapshot.exists()) {
-      throw new Error(`Setting level ${level} tidak ditemukan.`);
-    }
+    const snapshot = await window.db.ref(`settings/level${level}`).once("value");
+    if (!snapshot.exists()) throw new Error(`Setting level ${level} tidak ditemukan.`);
     const data = snapshot.val() || {};
     speed     = parseInt(data.speed)     || speed;
     tolerance = parseInt(data.tolerance) || tolerance;
@@ -58,19 +87,7 @@ async function fetchSettingsFromFirebase() {
   }
 }
 
-// Tunggu Firebase siap, bahkan jika belum sempat terdefinisi saat ini
-function waitForFirebaseReady(retries = 10) {
-  if (window.firebaseReady) {
-    window.firebaseReady.then(fetchSettingsFromFirebase);
-  } else if (retries > 0) {
-    setTimeout(() => waitForFirebaseReady(retries - 1), 300); // coba ulang tiap 300ms
-  } else {
-    alert("❌ Firebase belum siap setelah beberapa kali percobaan.");
-  }
-}
-
-waitForFirebaseReady();
-
+// Hitung mundur sebelum mulai game
 function startCountdown() {
   const interval = setInterval(() => {
     countdownNumber--;
@@ -120,7 +137,7 @@ function moveObject() {
   gameInterval = requestAnimationFrame(moveObject);
 }
 
-// Klik body untuk pause/resume
+// Klik untuk pause/resume
 document.body.addEventListener("click", () => {
   if (!gameStarted || gameEnded || countdownNumber > 0) return;
   tapSound.play();
@@ -138,8 +155,8 @@ document.body.addEventListener("click", () => {
 function checkHit() {
   const o = object.getBoundingClientRect();
   const t = target.getBoundingClientRect();
-  const offsetX = Math.abs((o.left + o.width/2) - (t.left + t.width/2));
-  const offsetY = Math.abs((o.top + o.height/2) - (t.top + t.height/2));
+  const offsetX = Math.abs((o.left + o.width / 2) - (t.left + t.width / 2));
+  const offsetY = Math.abs((o.top + o.height / 2) - (t.top + t.height / 2));
   const overlap = o.left <= t.right && o.right >= t.left && o.top <= t.bottom && o.bottom >= t.top;
   if (overlap && offsetX <= tolerance && offsetY <= tolerance) {
     document.body.style.backgroundColor = "#4CAF50";
@@ -152,7 +169,7 @@ function checkHit() {
 function centerObjectToTarget() {
   const t = target.getBoundingClientRect();
   const w = object.offsetWidth || 100;
-  object.style.left = `${t.left + t.width/2 - w/2}px`;
+  object.style.left = `${t.left + t.width / 2 - w / 2}px`;
 }
 
 function endGame(win) {
@@ -183,10 +200,11 @@ function showLoseModal() {
   document.getElementById("loseModal").classList.replace("hidden", "show");
 }
 
+// ✅ SIMPAN PEMENANG
 async function saveWinner() {
-  const nama  = document.getElementById("nama").value.trim();
-  const ig    = document.getElementById("instagram").value.trim();
-  const telp  = document.getElementById("telepon").value.trim();
+  const nama = document.getElementById("nama").value.trim();
+  const ig   = document.getElementById("instagram").value.trim();
+  const telp = document.getElementById("telepon").value.trim();
   const timestamp = new Date().toISOString();
 
   if (!nama || !telp) return alert("Nama dan Telepon wajib diisi!");
@@ -199,8 +217,7 @@ async function saveWinner() {
   };
 
   try {
-    const db = await window.firebaseReady;
-    const newRef = db.ref("winners").push();
+    const newRef = window.db.ref("winners").push();
     const key = newRef.key;
     sessionStorage.setItem("lastWinnerKey", key);
     await newRef.set(entry);
@@ -213,16 +230,16 @@ async function saveWinner() {
 
 function animateWin() {
   object.style.transition = "transform 0.5s ease";
-  object.style.transform  = "scale(1.3) rotate(10deg)";
+  object.style.transform = "scale(1.3) rotate(10deg)";
   setTimeout(() => object.style.transform = "scale(1) rotate(0)", 1000);
 }
 
 function animateLose() {
   object.style.transition = "none";
-  object.style.animation  = "shake 0.5s ease";
+  object.style.animation = "shake 0.5s ease";
   setTimeout(() => {
     object.style.transition = "transform 2.5s ease-out";
-    object.style.transform  = "translate(100vw, -50%)";
+    object.style.transform = "translate(100vw, -50%)";
   }, 500);
   setTimeout(() => {
     object.style.transform = "translate(-100vw, -100vh) rotate(-135deg)";
@@ -232,7 +249,7 @@ function animateLose() {
   }, 5500);
 }
 
-// Event listener untuk tombol Start
+// Tombol mulai
 if (startBtn) {
   startBtn.addEventListener("click", () => {
     [tapSound, winSound, loseSound].forEach(s => {
@@ -241,10 +258,10 @@ if (startBtn) {
         s.pause();
         s.muted = false;
         s.currentTime = 0;
-      }).catch(()=>{});
+      }).catch(() => {});
     });
     const cSound = document.getElementById("countdownSound");
-    if (cSound) cSound.play().catch(()=>{});
+    if (cSound) cSound.play().catch(() => {});
     startOverlay.style.display = "none";
     startCountdown();
   });
