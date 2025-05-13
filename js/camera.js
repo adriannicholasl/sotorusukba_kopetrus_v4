@@ -1,12 +1,54 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let frameImg = new Image();
-let storageRef; // Akan diinisialisasi setelah Firebase siap
+let storageRef;
 
 // Ambil key dari URL
 const params = new URLSearchParams(window.location.search);
 const winnerKey = params.get("key");
 
+// Fungsi tunggu Firebase siap (mirip game.js)
+async function waitForFirebaseReady(timeout = 5000) {
+  const start = Date.now();
+  while (typeof window.firebaseReady === "undefined") {
+    if (Date.now() - start > timeout) {
+      alert("❌ Firebase belum siap setelah beberapa kali percobaan.");
+      throw new Error("Timeout: firebaseReady belum tersedia.");
+    }
+    await new Promise(resolve => setTimeout(resolve, 100));
+  }
+
+  try {
+    const db = await window.firebaseReady;
+    console.log("✅ Firebase siap dan terkoneksi");
+    window.db = db;
+    return db;
+  } catch (err) {
+    console.error("❌ Gagal mendapatkan Firebase DB:", err);
+    alert("❌ Gagal koneksi ke Firebase.");
+    throw err;
+  }
+}
+
+// Memuat Firebase Storage jika belum ada
+function loadFirebaseStorageScript() {
+  return new Promise((resolve, reject) => {
+    if (firebase.storage) {
+      resolve();
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js';
+    script.onload = () => {
+      console.log("✅ Firebase Storage loaded");
+      resolve();
+    };
+    script.onerror = () => reject("❌ Gagal memuat Firebase Storage.");
+    document.head.appendChild(script);
+  });
+}
+
+// Event utama
 document.addEventListener("DOMContentLoaded", async () => {
   const video = document.getElementById("video");
 
@@ -15,13 +57,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  // Tunggu Firebase siap sebelum lanjut
   try {
-    const db = await waitForFirebaseReady(); // Tunggu Firebase siap
+    await loadFirebaseStorageScript();       // Pastikan storage siap
+    await waitForFirebaseReady();            // Tunggu Firebase siap
     const app = firebase.app();
     const storage = firebase.storage(app);
     storageRef = storage.ref();
-    console.log("✅ Firebase siap dan terkoneksi");
   } catch (err) {
     console.error("❌ Firebase belum siap:", err);
     alert("Firebase belum siap. Cek koneksi atau urutan skrip.");
@@ -91,13 +132,9 @@ async function takeSelfie() {
   const selfiePath = `selfies/${winnerKey}.jpg`;
 
   try {
-    // Upload ke Storage
     const selfieSnapshot = await storageRef.child(selfiePath).put(blob);
     const downloadURL = await selfieSnapshot.ref.getDownloadURL();
-
-    // Tunggu Firebase Database siap (lagi) untuk update
-    const db = await waitForFirebaseReady();
-    await db.ref(`winners/${winnerKey}`).update({ selfie: downloadURL });
+    await window.db.ref(`winners/${winnerKey}`).update({ selfie: downloadURL });
 
     alert("✅ Selfie disimpan di Firebase Storage dan Database!");
     window.location.href = "index.html";
@@ -105,21 +142,4 @@ async function takeSelfie() {
     console.error("❌ Gagal upload ke Firebase:", err);
     alert("❌ Gagal menyimpan selfie. Coba lagi nanti.");
   }
-}
-
-// Fungsi pengecekan kesiapan Firebase
-function waitForFirebaseReady(timeout = 5000) {
-  return new Promise((resolve, reject) => {
-    const start = Date.now();
-    const check = () => {
-      if (window.firebaseReady) {
-        resolve(window.firebaseReady);
-      } else if (Date.now() - start > timeout) {
-        reject("Timeout: window.firebaseReady tidak tersedia.");
-      } else {
-        setTimeout(check, 100);
-      }
-    };
-    check();
-  });
 }

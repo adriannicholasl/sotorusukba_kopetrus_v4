@@ -12,6 +12,7 @@ function loadScript(src) {
 // Memuat Firebase script
 Promise.all([ 
   loadScript("https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"),
+  loadScript("https://www.gstatic.com/firebasejs/9.22.2/firebase-storage-compat.js"),
   loadScript("https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js")
 ])
 .then(() => {
