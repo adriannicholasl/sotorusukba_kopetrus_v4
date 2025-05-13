@@ -1,3 +1,5 @@
+// ✅ game.js lengkap dengan QR selfie
+
 // Ambil level dari URL
 const query = new URLSearchParams(window.location.search);
 let level = parseInt(query.get("level"));
@@ -25,10 +27,8 @@ const countdownText   = document.getElementById("countdownText");
 const startBtn        = document.getElementById("startBtn");
 const startOverlay    = document.getElementById("startOverlay");
 
-// Tampilkan angka hitung mundur awal
 if (countdownText) countdownText.innerText = countdownNumber;
 
-// Ambil reward dari sessionStorage
 const storedReward = sessionStorage.getItem("selectedReward");
 if (storedReward) {
   try {
@@ -39,7 +39,6 @@ if (storedReward) {
   }
 }
 
-// ✅ Fungsi tunggu firebase siap, maksimal 5 detik
 async function waitForFirebaseReady(timeout = 5000) {
   const start = Date.now();
   while (typeof window.firebaseReady === "undefined") {
@@ -49,7 +48,6 @@ async function waitForFirebaseReady(timeout = 5000) {
     }
     await new Promise(resolve => setTimeout(resolve, 100));
   }
-
   try {
     const db = await window.firebaseReady;
     console.log("✅ Firebase siap dan terkoneksi");
@@ -61,7 +59,6 @@ async function waitForFirebaseReady(timeout = 5000) {
   }
 }
 
-// ✅ Inisialisasi game
 (async function initGame() {
   try {
     const db = await waitForFirebaseReady();
@@ -72,7 +69,6 @@ async function waitForFirebaseReady(timeout = 5000) {
   }
 })();
 
-// Ambil setting speed/tolerance dari Firebase
 async function fetchSettingsFromFirebase() {
   try {
     const snapshot = await window.db.ref(`settings/level${level}`).once("value");
@@ -87,7 +83,6 @@ async function fetchSettingsFromFirebase() {
   }
 }
 
-// Hitung mundur sebelum mulai game
 function startCountdown() {
   const interval = setInterval(() => {
     countdownNumber--;
@@ -137,7 +132,6 @@ function moveObject() {
   gameInterval = requestAnimationFrame(moveObject);
 }
 
-// Klik untuk pause/resume
 document.body.addEventListener("click", () => {
   if (!gameStarted || gameEnded || countdownNumber > 0) return;
   tapSound.play();
@@ -200,10 +194,9 @@ function showLoseModal() {
   document.getElementById("loseModal").classList.replace("hidden", "show");
 }
 
-// ✅ SIMPAN PEMENANG
 async function saveWinner() {
   const nama = document.getElementById("nama").value.trim();
-  const ig   = document.getElementById("instagram").value.trim();
+  const ig = document.getElementById("instagram").value.trim();
   const telp = document.getElementById("telepon").value.trim();
   const timestamp = new Date().toISOString();
 
@@ -217,10 +210,13 @@ async function saveWinner() {
   };
 
   try {
-    const newRef = window.db.ref("winners").push();
+    const db = await window.firebaseReady;
+    const newRef = db.ref("winners").push();
     const key = newRef.key;
     sessionStorage.setItem("lastWinnerKey", key);
     await newRef.set(entry);
+
+    updateSelfieQR(key);
     alert("✅ Data pemenang disimpan!");
   } catch (err) {
     console.error(err);
@@ -249,7 +245,6 @@ function animateLose() {
   }, 5500);
 }
 
-// Tombol mulai
 if (startBtn) {
   startBtn.addEventListener("click", () => {
     [tapSound, winSound, loseSound].forEach(s => {
@@ -266,3 +261,18 @@ if (startBtn) {
     startCountdown();
   });
 }
+
+// Tambahan untuk QR selfie
+function updateSelfieQR(key) {
+  const qrImage = document.getElementById("qrSelfieImage");
+  if (qrImage && key) {
+    const selfieUrl = `https://adriannicholasl.github.io/sotorusukba_kopetrus_v4/camera.html?key=${key}`;
+    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(selfieUrl)}&size=160x160`;
+  }
+}
+
+document.getElementById("btnSelfie")?.addEventListener("click", () => {
+  const key = sessionStorage.getItem("lastWinnerKey");
+  if (!key) return alert("Data pemenang belum tersimpan. Klik Simpan Data dulu.");
+  window.location.href = `camera.html?key=${key}`;
+});

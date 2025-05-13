@@ -1,18 +1,39 @@
-// js/camera.js versi fix dan optimal
+// ✅ js/camera.js versi optimal dengan penyimpanan selfie ke Firebase Storage
 
-// Global scope
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let frameImg = new Image();
 
-document.addEventListener("DOMContentLoaded", () => {
+// Ambil key dari URL
+const params = new URLSearchParams(window.location.search);
+const winnerKey = params.get("key");
+
+// Inisialisasi Firebase Storage
+let storageRef;
+document.addEventListener("DOMContentLoaded", async () => {
   const video = document.getElementById("video");
 
-  // Preload frame image
-  frameImg.src = "assets/images/fotoo.png"; // 1080x1350
-  frameImg.onerror = () => console.error("❌ Gagal memuat frame overlay");
+  if (!winnerKey) {
+    alert("❌ Tidak ada ID pemenang di URL.");
+    return;
+  }
 
-  // Setup camera
+  // Tunggu Firebase siap & siapkan Storage
+  try {
+    const db = await window.firebaseReady;
+    const app = firebase.app();
+    const storage = firebase.storage(app);
+    storageRef = storage.ref();
+  } catch (err) {
+    console.error("❌ Firebase belum siap:", err);
+    alert("Firebase belum siap");
+    return;
+  }
+
+  // Load overlay frame
+  frameImg.src = "assets/images/fotoo.png";
+  frameImg.onerror = () => console.warn("❌ Gagal memuat frame overlay");
+
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => video.srcObject = stream)
     .catch(err => {
@@ -20,24 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Kamera tidak tersedia. Gunakan perangkat lain.");
     });
 
-  // Tombol global
   window.takeSelfie = takeSelfie;
 });
 
 async function takeSelfie() {
-  // Tunggu Firebase siap
-  let db;
-  try {
-    db = await window.firebaseReady;
-  } catch {
-    return alert("Firebase belum siap");
-  }
-
-  const winnerKey = sessionStorage.getItem("lastWinnerKey");
-  if (!winnerKey) {
-    return alert("Tidak ada referensi pemenang. Jalankan game dahulu.");
-  }
-
   const video = document.getElementById("video");
   if (!video.videoWidth || !video.videoHeight) {
     return alert("Kamera belum siap. Coba lagi.");
@@ -47,14 +54,12 @@ async function takeSelfie() {
   canvas.width = targetW;
   canvas.height = targetH;
 
-  // Ambil frame video
   const tempCanvas = document.createElement("canvas");
   tempCanvas.width = video.videoWidth;
   tempCanvas.height = video.videoHeight;
   const tempCtx = tempCanvas.getContext("2d");
-  tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+  tempCtx.drawImage(video, 0, 0);
 
-  // Crop aspect 4:5
   const inputRatio = tempCanvas.width / tempCanvas.height;
   const targetRatio = targetW / targetH;
   let cropW = tempCanvas.width, cropH = tempCanvas.height;
@@ -64,14 +69,7 @@ async function takeSelfie() {
   const cropX = (tempCanvas.width - cropW) / 2;
   const cropY = (tempCanvas.height - cropH) / 2;
 
-  // Gambar hasil crop ke canvas final
-  ctx.drawImage(
-    tempCanvas,
-    cropX, cropY, cropW, cropH,
-    0, 0, targetW, targetH
-  );
-
-  // Overlay frame
+  ctx.drawImage(tempCanvas, cropX, cropY, cropW, cropH, 0, 0, targetW, targetH);
   if (frameImg.complete) {
     ctx.drawImage(frameImg, 0, 0, targetW, targetH);
   } else {
@@ -81,14 +79,18 @@ async function takeSelfie() {
     });
   }
 
-  const dataUrl = canvas.toDataURL("image/png");
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+  const selfiePath = `selfies/${winnerKey}.jpg`;
 
   try {
-    await db.ref(`winners/${winnerKey}`).update({ selfie: dataUrl });
-    alert("✅ Selfie disimpan ke Firebase. Mengalihkan kembali...");
+    const selfieSnapshot = await storageRef.child(selfiePath).put(blob);
+    const downloadURL = await selfieSnapshot.ref.getDownloadURL();
+    const db = await window.firebaseReady;
+    await db.ref(`winners/${winnerKey}`).update({ selfie: downloadURL });
+    alert("✅ Selfie disimpan di Firebase Storage dan Database!");
   } catch (err) {
-    console.error("❌ Gagal menyimpan selfie:", err);
-    alert("❌ Gagal menyimpan selfie, tetap melanjutkan...");
+    console.error("❌ Gagal upload ke Firebase Storage:", err);
+    alert("❌ Gagal menyimpan selfie ke Storage.");
   }
 
   window.location.href = "index.html";
