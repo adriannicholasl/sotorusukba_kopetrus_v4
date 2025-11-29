@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pilih Hadiah</title>
+  <link rel="stylesheet" href="css/style.css?v=5" />
+  <style>
+    body {
+      background: linear-gradient(360deg, rgba(168, 3, 3, 1) 0%, rgba(128, 0, 0, 1) 49%, rgba(54, 0, 0, 1) 100%);
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      font-family: sans-serif;
+      color: white;
+    }
+
+    h2#h2_select_reward {
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .reward-option {
+      display: inline-block;
+      margin: 10px;
+      border: 2px solid transparent;
+      padding: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.3s;
+      width: 140px;
+    }
+
+    .reward-option.selected {
+      border-color: #ffa12b;
+      transform: scale(1.1);
+    }
+
+    .reward-option img {
+      max-width: 100%;
+      max-height: 140px;
+      object-fit: contain;
+    }
+
+    .reward-name {
+      margin-top: 10px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #ffa12b;
+    }
+
+    #rewardContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      max-width: 90vw;
+    }
+
+    #startGameBtn {
+      font-family: WonderBoy;
+      margin-top: 30px;
+      padding: 15px 30px;
+      font-size: 1.4rem;
+      background-color: #363636;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bolder;
+      color: #fff;
+    }
+
+    #startGameBtn:disabled {
+      background-color: #ffa12b;
+      cursor: not-allowed;
+    }
+
+    input#codeInput {
+      padding: 10px;
+      font-size: 1rem;
+      width: 200px;
+      border-radius: 6px;
+      border: 1px solid #fff;
+    }
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2 id="h2_select_reward">PILIH HADIAH YANG KAMU INGINKAN</h2>
+    <div id="loading" style="display:none; margin:20px;">Memuat hadiah…</div>
+    <div id="rewardContainer"></div>
+    <div style="margin-top:20px;">
+      <input id="codeInput" type="number" placeholder="Masukkan kode akses..." minlength="6" maxlength="6"
+        oninput="this.value = this.value.slice(0, 6)" style="appearance: textfield;" />
+    </div>
+    <button id="startGameBtn" disabled>MULAI GAME</button>
+  </div>
+  <script src="js/firebase.js"></script>
+  <script type="module" src="js/select-reward.js"></script>
+</body>
+
+</html>

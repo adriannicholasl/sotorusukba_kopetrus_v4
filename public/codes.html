@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Kelola Kode Akses</title>
+
+  <!-- Fontfaces CSS-->
+  <link href="css/font-face.css" rel="stylesheet" media="all" />
+  <link href="vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all" />
+  <link href="vendor/font-awesome-5/css/fontawesome-all.min.css" rel="stylesheet" media="all" />
+  <link href="vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&family=Fredoka:wght@400;600&display=swap"
+    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS-->
+  <link href="vendor/bootstrap-4.1/bootstrap.min.css" rel="stylesheet" media="all" />
+
+  <!-- Vendor CSS-->
+  <link href="vendor/animsition/animsition.min.css" rel="stylesheet" media="all" />
+  <link href="vendor/bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" media="all" />
+  <link href="vendor/wow/animate.css" rel="stylesheet" media="all" />
+  <link href="vendor/css-hamburgers/hamburgers.min.css" rel="stylesheet" media="all" />
+  <link href="vendor/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+
+  <!-- Main CSS-->
+  <link href="css/theme.css" rel="stylesheet" media="all" />
+
+  <style>
+    body {
+      font-family: 'Fredoka', sans-serif;
+      background-color: #f0f2f5;
+    }
+
+    .main-content {
+      padding-top: 100px;
+      padding-bottom: 50px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+    }
+
+    .card-header {
+      background-color: #fff;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #eee;
+      border-radius: 8px 8px 0 0;
+      padding: 12px 20px;
+    }
+
+    .card-footer {
+      background-color: #fff;
+      border-top: 1px solid #eee;
+      border-radius: 0 0 8px 8px;
+      text-align: right;
+      padding: 12px 20px;
+    }
+
+    .table-data2 {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-data2 th,
+    .table-data2 td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .table-data2 tr.tr-shadow:hover {
+      background-color: rgba(0, 0, 0, 0.03);
+    }
+
+    .empty-table {
+      text-align: center;
+      font-style: italic;
+      color: #888;
+    }
+
+    .status-badge {
+      padding: 3px 8px;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+    }
+
+    .status-available {
+      background: #28a745;
+    }
+
+    .status-used {
+      background: #ffc107;
+      color: black;
+    }
+
+    .status-expired {
+      background: #dc3545;
+    }
+
+    /* Mobile Navbar */
+    .navbar-mobile {
+      display: none;
+    }
+
+    .navbar-mobile.active {
+      display: block;
+    }
+
+    @media screen and (max-width: 999px) {
+      .hide-on-small {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-wrapper">
+
+    <!-- HEADER MOBILE-->
+    <header class="header-mobile d-block d-lg-none">
+      <div class="header-mobile__bar">
+        <div class="container-fluid">
+          <div class="header-mobile-inner">
+            <button class="hamburger hamburger--slider" type="button">
+              <span class="hamburger-box">
+                <span class="hamburger-inner"></span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <nav class="navbar-mobile">
+        <div class="container-fluid">
+          <ul class="navbar-mobile__list list-unstyled">
+            <li><a href="index.html"><i class="fas fa-tachometer-alt"></i> Kembali ke Game</a></li>
+            <li><a href="dashboard.html"><i class="fas fa-key"></i> Dashboard</a></li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <!-- NAVBAR DESKTOP -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark hide-on-small">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Dashboard</a>
+        <a href="dashboard.html" class="btn btn-outline-light ms-auto">Daftar Pemain</a>
+        <a href="index.html" class="btn btn-outline-light ms-auto">Kembali ke Game</a>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT-->
+    <div class="main-content">
+      <div class="section__content section__content--p30">
+        <div class="container-fluid">
+
+          <!-- Tambah Kode -->
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header"><strong>Tambah</strong> Kode Akses</div>
+                <div class="card-body card-block">
+                  <div class="form-group">
+                    <label>Kode</label>
+                    <input id="codeInput" type="number" class="form-control" placeholder="Masukkan 6 digit angka..."
+                      minlength="6" maxlength="6" oninput="this.value = this.value.replace(/[^0-9]/g,'').slice(0,6)"
+                      style="appearance: textfield;">
+                  </div>
+                  <div class="form-group">
+                    <label>Expired (Jam)</label>
+                    <input id="expireHours" type="number" class="form-control" value="24">
+                  </div>
+                  <button class="btn btn-primary" onclick="saveCode()"><i class="fa fa-dot-circle-o"></i> Simpan
+                    Kode</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- List Kode -->
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header">
+                  <strong>Daftar</strong> Kode
+                </div>
+                <div class="card-body card-block">
+                  <!-- Input pencarian -->
+                  <div class="row mb-3">
+                    <div class="col-md-4">
+                      <input id="searchCode" type="text" class="form-control" placeholder="Cari kode...">
+                    </div>
+                    <div class="col-md-4">
+                      <select id="filterStatus" class="form-control">
+                        <option value="">Semua Status</option>
+                        <option value="Tersedia">Tersedia</option>
+                        <option value="Terpakai">Terpakai</option>
+                        <option value="Kadaluwarsa">Kadaluwarsa</option>
+                      </select>
+                    </div>
+                    <div class="col-md-4 text-end">
+                      <button class="btn btn-secondary" onclick="downloadCodesJSON()"><i class="fa fa-download"></i>
+                        JSON</button>
+                      <button class="btn btn-success" onclick="downloadCodesCSV()"><i class="fa fa-file-excel-o"></i>
+                        CSV</button>
+                      <button class="btn btn-danger" onclick="downloadCodesPDF()"><i class="fa fa-file-pdf-o"></i>
+                        PDF</button>
+                    </div>
+                  </div>
+
+                  <div class="table-responsive table-responsive-data2">
+                    <table class="table table-data2">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th>Status</th>
+                          <th>Dibuat</th>
+                          <th>Expired</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody id="codesTableBody">
+                        <tr class="tr-shadow">
+                          <td colspan="5" class="empty-table">Memuat data kode...</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JS Vendor -->
+  <script src="vendor/jquery-3.2.1.min.js"></script>
+  <script src="vendor/bootstrap-4.1/popper.min.js"></script>
+  <script src="vendor/bootstrap-4.1/bootstrap.min.js"></script>
+  <script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="vendor/animsition/animsition.min.js"></script>
+
+  <!-- Firebase & Custom JS -->
+  <script src="js/firebase.js"></script>
+  <script src="js/codes.js"></script>
+
+  <!-- Hamburger toggle & filter/search -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const hamburgerBtn = document.querySelector(".hamburger");
+      const navbarMobile = document.querySelector(".navbar-mobile");
+
+      if (hamburgerBtn && navbarMobile) {
+        hamburgerBtn.addEventListener("click", () => {
+          hamburgerBtn.classList.toggle("is-active");
+          navbarMobile.classList.toggle("active");
+        });
+      }
+
+      // Search dan filter status
+      const searchInput = document.getElementById("searchCode");
+      const filterSelect = document.getElementById("filterStatus");
+      const tableBody = document.getElementById("codesTableBody");
+
+      function filterTable() {
+        const searchText = searchInput.value.toLowerCase();
+        const statusFilter = filterSelect.value.toLowerCase();
+        const rows = tableBody.getElementsByTagName("tr");
+
+        for (let i = 0; i < rows.length; i++) {
+          const codeCell = rows[i].getElementsByTagName("td")[0];
+          const statusCell = rows[i].getElementsByTagName("td")[1];
+          if (codeCell && statusCell) {
+            const codeText = codeCell.textContent || codeCell.innerText;
+            const statusText = statusCell.textContent || statusCell.innerText;
+            const matchesSearch = codeText.toLowerCase().includes(searchText);
+            const matchesStatus = statusFilter === "" || statusText.toLowerCase() === statusFilter;
+            rows[i].style.display = (matchesSearch && matchesStatus) ? "" : "none";
+          }
+        }
+      }
+
+      searchInput.addEventListener("keyup", filterTable);
+      filterSelect.addEventListener("change", filterTable);
+    });
+  </script>
+</body>
+
+</html>
