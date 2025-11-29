@@ -42,7 +42,7 @@ window.saveCode = async function () {
   }
 };
 
-// LOAD CODES
+
 async function loadCodes() {
   const table = document.getElementById("codesTableBody");
   table.innerHTML = `<tr><td colspan="5">Memuat data...</td></tr>`;
