@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const canvas = document.getElementById("canvas");
   const ctx = canvas.getContext("2d");
 
-  navigator.mediaDevices.getUserMedia({ video: true })
+  navigator.mediaDevices
+    .getUserMedia({ video: true })
     .then((stream) => {
       video.srcObject = stream;
     })
@@ -32,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // EDITED by Adriannicholasl
-  // Mengambil foto dari video dan menyimpannya ke Firebase   
+  // Mengambil foto dari video dan menyimpannya ke Firebase
   // FIXED Ukuran gambar untuk feed IG potret 4:5 (1080x1350)
   window.takeSelfie = () => {
     const key = getWinnerKeyFromURL();
@@ -74,17 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const cropX = (tempCanvas.width - cropWidth) / 2;
     const cropY = (tempCanvas.height - cropHeight) / 2;
 
-    ctx.drawImage(
-      tempCanvas,
-      cropX,
-      cropY,
-      cropWidth,
-      cropHeight,
-      0,
-      0,
-      targetWidth,
-      targetHeight
-    );
+    ctx.drawImage(tempCanvas, cropX, cropY, cropWidth, cropHeight, 0, 0, targetWidth, targetHeight);
 
     const frame = new Image();
     frame.src = "assets/images/fotoo.png";
@@ -116,13 +107,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // Update data pemenang dengan selfie
-            ref.update({
-              selfie: dataUrl,
-              selfieTime: new Date().toISOString()
-            })
+            ref
+              .update({
+                selfie: dataUrl,
+                selfieTime: new Date().toISOString(),
+              })
               .then(() => {
                 alert("✅ Selfie disimpan ke Firebase. Mengalihkan kembali...");
-                window.location.href = "https://adriannicholasl.github.io/sotorusukba_kopetrus_v4/";
+                window.location.href = "https://rusukbakopetrus.web.app/";
               })
               .catch((err) => {
                 alert("❌ Gagal menyimpan selfie.");
@@ -140,5 +132,4 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("❌ Gagal memuat frame gambar.");
     };
   };
-
 });

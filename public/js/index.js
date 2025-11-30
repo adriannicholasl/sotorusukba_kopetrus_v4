@@ -1,46 +1,38 @@
-function startGame(level) {
-    sessionStorage.setItem('audioAllowed', 'true');
-    document.body.classList.remove("fade-in");
-    document.body.classList.add("fade-out");
-    setTimeout(() => {
-        window.location.href = `select-reward.html?level=${level}`; // FIXED
+"use strict";
+function startGame(e) {
+  sessionStorage.setItem("audioAllowed", "true"),
+    document.body.classList.remove("fade-in"),
+    document.body.classList.add("fade-out"),
+    setTimeout(function () {
+      window.location.href = "select-reward.html?level=".concat(e);
     }, 500);
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    // Menyembunyikan loader setelah halaman sepenuhnya dimuat
-    const loader = document.getElementById("loader");
-    if (loader) loader.style.display = "none";
-
-    // Resetting background dan content height agar selalu sesuai layar
-    const bg = document.querySelector(".background");
-    const content = document.querySelector(".content");
-    if (bg) bg.style.height = "100vh";           
-    if (content) content.style.height = "100vh"; 
-
-    // Scroll ke atas (menggunakan beberapa cara untuk memastikan)
-    window.scrollTo(0, 0);
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-
-    // Keluar dari mode fullscreen jika sedang aktif
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch((err) => {
-            console.warn("Tidak bisa keluar dari fullscreen:", err);
-        });
-    }
-
-    // Menyusun ulang objek jika ada
-    const obj = document.getElementById("object");
-    if (obj) {
-        const posX = (window.innerWidth - 100) / 2; // Menyusun objek di tengah layar
-        obj.style.left = posX + "px";
-    }
-});
-
-// Pendaftaran service worker untuk caching
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('Service Worker registered!', reg))
-        .catch(err => console.log('Service Worker failed:', err));
-}
+document.addEventListener("DOMContentLoaded", function () {
+  var e = document.getElementById("loader");
+  e && (e.style.display = "none");
+  var t = document.querySelector(".background"),
+    r = document.querySelector(".content");
+  t && (t.style.height = "100vh"),
+    r && (r.style.height = "100vh"),
+    window.scrollTo(0, 0),
+    (document.body.scrollTop = 0),
+    (document.documentElement.scrollTop = 0),
+    document.fullscreenElement &&
+      document.exitFullscreen().catch(function (e) {
+        console.warn("Tidak bisa keluar dari fullscreen:", e);
+      });
+  var n = document.getElementById("object");
+  if (n) {
+    var o = (window.innerWidth - 100) / 2;
+    n.style.left = o + "px";
+  }
+}),
+  "serviceWorker" in navigator &&
+    navigator.serviceWorker
+      .register("service-worker.js")
+      .then(function (e) {
+        return console.log("Service Worker registered!", e);
+      })
+      .catch(function (e) {
+        return console.log("Service Worker failed:", e);
+      });

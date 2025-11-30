@@ -97,18 +97,6 @@ async function waitForFirebaseReady(timeout = 5000) {
   }
 })();
 
-// Ambil speed / tolerance dari Firebase
-async function fetchSettingsFromFirebase() {
-  try {
-    const snap = await window.db.ref(`settings/level${level}`).once("value");
-    const data = snap.val() || {};
-    speed = parseInt(data.speed) || speed;
-    tolerance = parseInt(data.tolerance) || tolerance;
-  } catch (err) {
-    alert("Gagal load pengaturan level.");
-  }
-}
-
 async function fetchSettingsFromFirebase() {
   try {
     const snap = await window.db.ref(`settings/level${level}`).once("value");

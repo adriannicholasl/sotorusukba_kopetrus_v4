@@ -2,10 +2,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     console.log("Menunggu Firebase siap...");
     await window.firebaseReady;
+
+    if (!window.db) {
+      console.error("❌ window.db belum siap!");
+      alert("Firebase Database belum siap. Periksa koneksi.");
+      return;
+    }
+
     console.log("✅ Firebase siap");
     loadCodes();
 
-    setInterval(loadCodes, 10000);
+    // Load ulang setiap 10 menit
+    setInterval(loadCodes, 600000);
   } catch (err) {
     console.error("❌ Firebase tidak siap:", err);
     alert("Firebase tidak siap. Periksa koneksi.");
@@ -17,9 +25,13 @@ window.saveCode = async function () {
   const code = document.getElementById("codeInput").value.trim();
   const hours = parseInt(document.getElementById("expireHours").value) || 24;
 
-  // 👉 VALIDASI 6 DIGIT ANGKA
   if (!/^[0-9]{6}$/.test(code)) {
     alert("Kode harus 6 digit angka!");
+    return;
+  }
+
+  if (!window.db) {
+    alert("Firebase Database belum siap.");
     return;
   }
 
@@ -42,10 +54,14 @@ window.saveCode = async function () {
   }
 };
 
-
 async function loadCodes() {
   const table = document.getElementById("codesTableBody");
   table.innerHTML = `<tr><td colspan="5">Memuat data...</td></tr>`;
+
+  if (!window.db) {
+    table.innerHTML = `<tr><td colspan="5">Firebase Database belum siap.</td></tr>`;
+    return;
+  }
 
   try {
     const snap = await window.db.ref("access_codes").once("value");
@@ -89,6 +105,12 @@ async function loadCodes() {
 // DELETE CODE
 window.deleteCode = async function (code) {
   if (!confirm("Yakin ingin menghapus kode: " + code + " ?")) return;
+
+  if (!window.db) {
+    alert("Firebase Database belum siap.");
+    return;
+  }
+
   try {
     await window.db.ref("access_codes/" + code).remove();
     loadCodes();
@@ -112,6 +134,8 @@ function formatDate(t) {
 
 // DOWNLOAD JSON
 window.downloadCodesJSON = async function () {
+  if (!window.db) return alert("Firebase Database belum siap.");
+
   const snap = await window.db.ref("access_codes").once("value");
   const data = snap.val() || {};
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
@@ -125,6 +149,8 @@ window.downloadCodesJSON = async function () {
 
 // DOWNLOAD CSV / EXCEL
 window.downloadCodesCSV = async function () {
+  if (!window.db) return alert("Firebase Database belum siap.");
+
   const snap = await window.db.ref("access_codes").once("value");
   const data = snap.val() || {};
   if (!data || Object.keys(data).length === 0) return alert("Belum ada data kode.");
@@ -145,6 +171,8 @@ window.downloadCodesCSV = async function () {
 
 // DOWNLOAD PDF
 window.downloadCodesPDF = async function () {
+  if (!window.db) return alert("Firebase Database belum siap.");
+
   const snap = await window.db.ref("access_codes").once("value");
   const data = snap.val() || {};
   if (!data || Object.keys(data).length === 0) return alert("Belum ada data kode.");

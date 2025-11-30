@@ -239,7 +239,13 @@
                         </tr>
                       </tbody>
                     </table>
+                    <div class="text-center mt-3">
+                      <nav>
+                        <ul id="pagination" class="pagination justify-content-center"></ul>
+                      </nav>
+                    </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -263,6 +269,7 @@
   <script src="js/codes.js"></script>
 
   <!-- Hamburger toggle & filter/search -->
+  <!-- JS untuk search, filter & pagination -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const hamburgerBtn = document.querySelector(".hamburger");
@@ -275,33 +282,154 @@
         });
       }
 
-      // Search dan filter status
+      const tableBody = document.getElementById("codesTableBody");
       const searchInput = document.getElementById("searchCode");
       const filterSelect = document.getElementById("filterStatus");
-      const tableBody = document.getElementById("codesTableBody");
+      const pagination = document.getElementById("pagination");
+      const rowsPerPage = 10;
+      let currentPage = 1;
+      let filteredRows = [];
 
-      function filterTable() {
+      // Terapkan filter search & status
+      function applyFilter() {
         const searchText = searchInput.value.toLowerCase();
         const statusFilter = filterSelect.value.toLowerCase();
-        const rows = tableBody.getElementsByTagName("tr");
 
-        for (let i = 0; i < rows.length; i++) {
-          const codeCell = rows[i].getElementsByTagName("td")[0];
-          const statusCell = rows[i].getElementsByTagName("td")[1];
-          if (codeCell && statusCell) {
-            const codeText = codeCell.textContent || codeCell.innerText;
-            const statusText = statusCell.textContent || statusCell.innerText;
-            const matchesSearch = codeText.toLowerCase().includes(searchText);
-            const matchesStatus = statusFilter === "" || statusText.toLowerCase() === statusFilter;
-            rows[i].style.display = (matchesSearch && matchesStatus) ? "" : "none";
-          }
-        }
+        const allRows = Array.from(tableBody.getElementsByTagName("tr"));
+        filteredRows = allRows.filter(row => {
+          const codeCell = row.getElementsByTagName("td")[0];
+          const statusCell = row.getElementsByTagName("td")[1];
+          if (!codeCell || !statusCell) return false;
+
+          const codeText = codeCell.textContent.toLowerCase();
+          const statusText = statusCell.textContent.toLowerCase();
+
+          const matchesSearch = codeText.includes(searchText);
+          const matchesStatus = statusFilter === "" || statusText === statusFilter;
+
+          return matchesSearch && matchesStatus;
+        });
+
+        currentPage = 1;
+        renderTablePage();
       }
 
-      searchInput.addEventListener("keyup", filterTable);
-      filterSelect.addEventListener("change", filterTable);
+      // Render tabel sesuai halaman
+      function renderTablePage() {
+        const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+        // Sembunyikan semua row
+        Array.from(tableBody.getElementsByTagName("tr")).forEach(row => row.style.display = "none");
+
+        // Tampilkan row sesuai halaman
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        filteredRows.slice(start, end).forEach(row => row.style.display = "");
+
+        renderPagination(totalPages);
+      }
+
+      // Render tombol pagination
+      function renderPagination(totalPages) {
+        pagination.innerHTML = "";
+
+        if (totalPages <= 1) return; // Tidak perlu pagination
+
+        // Tombol Previous
+        const prevLi = document.createElement("li");
+        prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+        prevLi.innerHTML = `<a class="page-link" href="#">Previous</a>`;
+        prevLi.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (currentPage > 1) {
+            currentPage--;
+            renderTablePage();
+            scrollToTable();
+          }
+        });
+        pagination.appendChild(prevLi);
+
+        // Tombol page
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement("li");
+          li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+          li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+          li.addEventListener("click", function (e) {
+            e.preventDefault();
+            currentPage = i;
+            renderTablePage();
+            scrollToTable();
+          });
+          pagination.appendChild(li);
+        }
+
+        // Tombol Next
+        const nextLi = document.createElement("li");
+        nextLi.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+        nextLi.innerHTML = `<a class="page-link" href="#">Next</a>`;
+        nextLi.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderTablePage();
+            scrollToTable();
+          }
+        });
+        pagination.appendChild(nextLi);
+      }
+
+      function scrollToTable() {
+        tableBody.closest('.table-responsive').scrollIntoView({ behavior: 'smooth' });
+      }
+
+      // Event listener search & filter
+      searchInput.addEventListener("keyup", applyFilter);
+      filterSelect.addEventListener("change", applyFilter);
+
+      // Fungsi ini harus dipanggil setiap kali data kode baru dimuat
+      // Fungsi untuk merender pagination & tabel
+      function refreshPagination() {
+        const allRows = Array.from(tableBody.getElementsByTagName("tr"))
+          .filter(row => !row.classList.contains("empty-table")); // abaikan row "Memuat data kode..."
+
+        filteredRows = allRows; // awalnya semua row
+
+        applyFilter(); // terapkan search & filter
+      }
+
+      // Setelah load data (misal dari Firebase)
+      function loadCodesToTable(codes) {
+        tableBody.innerHTML = ""; // hapus row lama
+
+        if (!codes || codes.length === 0) {
+          tableBody.innerHTML = `<tr class="tr-shadow"><td colspan="5" class="empty-table">Tidak ada kode tersedia</td></tr>`;
+          pagination.innerHTML = "";
+          return;
+        }
+
+        codes.forEach(code => {
+          const tr = document.createElement("tr");
+          tr.className = "tr-shadow";
+          tr.innerHTML = `
+      <td>${code.value}</td>
+      <td>${code.status}</td>
+      <td>${code.created}</td>
+      <td>${code.expired}</td>
+      <td>
+        <button class="btn btn-sm btn-danger" onclick="deleteCode('${code.value}')">Hapus</button>
+      </td>
+    `;
+          tableBody.appendChild(tr);
+        });
+
+        refreshPagination(); // PENTING: panggil refreshPagination setelah data masuk
+      }
+
+
+      // Jika Anda menggunakan fungsi saveCode() atau loadCodes(), jangan lupa panggil refreshPagination() setelah menambahkan atau menghapus kode
     });
   </script>
+
 </body>
 
 </html>

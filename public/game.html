@@ -461,15 +461,16 @@
       <section class="modal-container-body rtf">
         <img id="winRewardIcon" src="" alt="Reward Icon" class="reward-icon" />
         <h2 id="winRewardCode" class="reward-code"></h2>
-        <p>Selamat kamu mendapatkan hadiah, hubungi staf kami sekarang dan tukarkan hadiah kamu. Silahkan mengisi form
-          data pemenang dibawah ini, pastikan kamu sudah follow sosial media @sotorusukbakopetrus.</p>
+        <p>
+          Selamat ngoni dapa depe hadiah, pangge pa torang pe staf sekarang dan tukarkan ngoni pe hadiah. Silahkan isi
+          form data pemenang dibawah ini, pastikan ngoni so follow torang pe sosial media @sotorusukbakopetrus.</p>
         <input type="text" id="nama" placeholder="Nama" required />
         <input type="text" id="instagram" placeholder="@Instagram" />
         <input type="tel" id="telepon" placeholder="No. Telepon" required />
 
         <h3>
           Scan QR <br />
-          Untuk Selfie Menggunakan Smartphone Anda
+          For Selfie Pake Ngoni pe HP
         </h3>
         <div class="selfie-qr">
           <img id="qrSelfieImage" src="" alt="QR Selfie" />
@@ -486,7 +487,7 @@
   <div class="modal hidden" id="loseModal">
     <article class="modal-container">
       <header class="modal-container-header">
-        <h1 class="modal-container-title">Anda Kalah</h1>
+        <h1 class="modal-container-title">Ngoni Kalah</h1>
         <button class="icon-button">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
             <path fill="none" d="M0 0h24v24H0z" />
@@ -496,8 +497,8 @@
         </button>
       </header>
       <section class="modal-container-body rtf">
-        <h1>⏰ Waktu Habis!</h1>
-        <p>Yuk coba lagi untuk menangkan hadiah!</p>
+        <h1>⏰ Abis Waktu!</h1>
+        <p>Mau Coba ulang for menangkan hadiah?</p>
       </section>
       <footer class="modal-container-footer">
         <button class="button is-ghost" onclick="window.location.href='index.html'">Kembali</button>
@@ -525,7 +526,7 @@
     function updateSelfieQR(key) {
       const qrImage = document.getElementById("qrSelfieImage");
       if (qrImage && key) {
-        const selfieUrl = `https://adriannicholasl.github.io/sotorusukba_kopetrus_v4/camera.html?key=${key}`;
+        const selfieUrl = `https://rusukbakopetrus.web.app/camera.html?key=${key}`;
         qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(selfieUrl)}&size=160x160`;
       }
     }
